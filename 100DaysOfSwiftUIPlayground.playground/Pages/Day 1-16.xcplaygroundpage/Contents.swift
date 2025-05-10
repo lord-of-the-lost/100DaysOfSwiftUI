@@ -88,3 +88,17 @@ fizzBuzzAnother()
 enum CustomError: Error {
     case outOfBounds, noRoot
 }
+
+func getSqrt(_ number: Int) throws -> Int {
+    if number < 1 || number > 10000 {
+        throw CustomError.outOfBounds
+    }
+    
+    for i in 1...(number / 2 + 1) {
+        if i * i == number {
+            return i
+        }
+    }
+    
+    throw CustomError.noRoot
+}
