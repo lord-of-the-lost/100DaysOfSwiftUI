@@ -102,3 +102,178 @@ func getSqrt(_ number: Int) throws -> Int {
     
     throw CustomError.noRoot
 }
+
+// MARK: - Checkpoint 5
+
+//Your input is this:
+//
+//let luckyNumbers = [7, 4, 38, 21, 16, 15, 12, 33, 31, 49]
+//Your job is to:
+//
+//Filter out any numbers that are even
+//Sort the array in ascending order
+//Map them to strings in the format “7 is a lucky number”
+//Print the resulting array, one item per line
+//So, your output should be as follows:
+//
+//7 is a lucky number
+//15 is a lucky number
+//21 is a lucky number
+//31 is a lucky number
+//33 is a lucky number
+//49 is a lucky number
+
+let luckyNumbers = [7, 4, 38, 21, 16, 15, 12, 33, 31, 49]
+
+func checkLuckyNumbers(_ array: [Int]) {
+    array
+        .sorted()
+        .filter { !$0.isMultiple(of: 2) }
+        .map {
+            print("\($0) is a lucky number")
+        }
+}
+
+checkLuckyNumbers(luckyNumbers)
+
+// MARK: - Checkpoint 6
+
+//To check your knowledge, here’s a small task for you: create a struct to store information about a car, including its model, number of seats, and current gear, then add a method to change gears up or down. Have a think about variables and access control: what data should be a variable rather than a constant, and what data should be exposed publicly? Should the gear-changing method validate its input somehow?
+
+struct Car {
+    private let model: String
+    private let numberOfSeats: Int
+    private var currentGear: UInt
+    
+    private mutating func changeCurrentGear(needUp: Bool) {
+        switch needUp {
+        case true: currentGear += 1
+        case false: currentGear -= 1
+        }
+    }
+}
+
+// MARK: - Checkpoint 7
+
+//Your challenge is this: make a class hierarchy for animals, starting with Animal at the top, then Dog and Cat as subclasses, then Corgi and Poodle as subclasses of Dog, and Persian and Lion as subclasses of Cat.
+//
+//But there’s more:
+//
+//The Animal class should have a legs integer property that tracks how many legs the animal has.
+//The Dog class should have a speak() method that prints a generic dog barking string, but each of the subclasses should print something slightly different.
+//The Cat class should have a matching speak() method, again with each subclass printing something different.
+//The Cat class should have an isTame Boolean property, provided using an initializer.
+
+
+class Animal {
+    let legsCount: Int
+    
+    init(legsCount: Int) {
+        self.legsCount = legsCount
+    }
+}
+
+class Cat: Animal {
+    let isTame: Bool
+    
+    init(legsCount: Int, isTame: Bool) {
+        self.isTame = isTame
+        super.init(legsCount: legsCount)
+    }
+    
+    func speak() {
+        print("Meow")
+    }
+}
+
+class Dog: Animal {
+    func speak() {
+        print("Bark!")
+    }
+}
+
+final class Corgi: Dog {
+    override func speak() {
+        super.speak()
+        print("bark-bark")
+    }
+}
+
+final class Poodle: Dog {
+    override func speak() {
+        super.speak()
+        print("barkkkk")
+    }
+}
+
+final class Persian: Cat {
+    override func speak() {
+        super.speak()
+        print("meooooow")
+    }
+}
+
+final class Lion: Cat {
+    override func speak() {
+        super.speak()
+        print("meooooow arrr")
+    }
+}
+
+// MARK: - Checkpoint 8
+
+//Your challenge is this: make a class hierarchy for animals, starting with Animal at the top, then Dog and Cat as subclasses, then Corgi and Poodle as subclasses of Dog, and Persian and Lion as subclasses of Cat.
+//
+//But there’s more:
+//
+//The Animal class should have a legs integer property that tracks how many legs the animal has.
+//The Dog class should have a speak() method that prints a generic dog barking string, but each of the subclasses should print something slightly different.
+//The Cat class should have a matching speak() method, again with each subclass printing something different.
+//The Cat class should have an isTame Boolean property, provided using an initializer.
+
+protocol Building {
+    var roomCount: Int { get }
+    var cost: Int { get set }
+    var agent: String { get }
+    func summary()
+}
+
+extension Building {
+    func summary() {
+        print("""
+        ***SUMMARY***
+        Building Type : \(Self.self)
+        Room : \(roomCount)
+        Cost : \(cost)$
+        Agent : \(agent)
+        """)
+    }
+}
+
+struct House: Building {
+    let roomCount: Int
+    var cost: Int
+    let agent: String
+}
+
+struct Office: Building {
+    let roomCount: Int
+    var cost: Int
+    let agent: String
+}
+
+// MARK: - Checkpoint 9
+
+//Your challenge is this: write a function that accepts an optional array of integers, and returns one randomly. If the array is missing or empty, return a random number in the range 1 through 100.
+//
+//If that sounds easy, it’s because I haven’t explained the catch yet: I want you to write your function in a single line of code. No, that doesn’t mean you should just write lots of code then remove all the line breaks – you should be able to write this whole thing in one line of code.
+
+func randomNumber(array: [Int]?) -> Int {
+    array?.randomElement() ?? Int.random(in: 1...100)
+}
+
+let arr1 = [1000,1002,1004,1006,1008,1010,1012,1014,1016,1018,1020]
+let arr2: [Int]? = nil
+
+print(randomNumber(array: arr1))
+print(randomNumber(array: arr2))
