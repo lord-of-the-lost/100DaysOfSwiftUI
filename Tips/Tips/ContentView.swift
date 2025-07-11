@@ -13,19 +13,10 @@ struct ContentView: View {
     @State private var numberOfPeople = 2
     @State private var tipPercentage = 20
     
-    private let pickerOffset = 2
-    private let maxPeopleCount: Int = 100
-    private let tipPercentages = [0, 10, 15, 20, 25]
-    
-    private var totalPerPerson: Double {
-        let peopleCount = Double(numberOfPeople + pickerOffset)
-        let tipSelection = Double(tipPercentage)
-        let tipValue = checkAmount / 100 * tipSelection
-        let grandTotal = checkAmount + tipValue
-        let amountPerPerson = grandTotal / peopleCount
-        
-        return amountPerPerson
-    }
+    private let peoplePickerOffset = 2
+    private let maxPeopleCount = 100
+    private let minTipPercent = 0
+    private let maxTipPercent = 100
     
     var body: some View {
         NavigationStack {
@@ -36,7 +27,7 @@ struct ContentView: View {
                         .focused($amountIsFocused)
                     
                     Picker("Number of people", selection: $numberOfPeople) {
-                        ForEach(pickerOffset..<maxPeopleCount, id: \.self) {
+                        ForEach(peoplePickerOffset..<maxPeopleCount, id: \.self) {
                             Text("\($0) people")
                         }
                     }
@@ -44,15 +35,19 @@ struct ContentView: View {
                 
                 Section("How much do you want to tip") {
                     Picker("Tip percentage", selection: $tipPercentage) {
-                        ForEach(tipPercentages, id: \.self) {
+                        ForEach(minTipPercent...maxTipPercent, id: \.self) {
                             Text($0, format: .percent)
                         }
                     }
-                    .pickerStyle(.segmented)
+                    .pickerStyle(.navigationLink)
                 }
                 
-                Section {
+                Section("Amount per person") {
                     Text(totalPerPerson, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                }
+                
+                Section("Total amount for the check") {
+                    Text(grandTotal, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                 }
             }
             .navigationTitle("WeSplit")
@@ -64,6 +59,21 @@ struct ContentView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Private
+private extension ContentView {
+    var tipValue: Double  {
+        checkAmount / 100 * Double(tipPercentage)
+    }
+    
+    var grandTotal: Double {
+        checkAmount + tipValue
+    }
+    
+    var totalPerPerson: Double {
+        grandTotal / Double(numberOfPeople)
     }
 }
 
