@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct ContentView: View {
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Monaco", "Italy", "Nigeria", "Poland", "Spain", "UK", "Russia", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
@@ -19,6 +17,7 @@ struct ContentView: View {
     @State private var score = 0
     @State private var questionsAsked = 0
     @State private var showingFinalScore = false
+    @State private var selectedFlag: Int? = nil
 
     var body: some View {
         ZStack {
@@ -50,9 +49,19 @@ struct ContentView: View {
 
                     ForEach(0..<3) { number in
                         Button {
+                            withAnimation {
+                                selectedFlag = number
+                            }
                             flagTapped(number)
                         } label: {
                             FlagImage(imageName: countries[number])
+                                .rotation3DEffect(
+                                    .degrees(selectedFlag == number ? 360 : 0),
+                                    axis: (x: 0, y: 1, z: 0)
+                                )
+                                .opacity(selectedFlag == nil || selectedFlag == number ? 1 : 0.25)
+                                .scaleEffect(selectedFlag == nil || selectedFlag == number ? 1 : 0.75)
+                                .animation(.easeInOut(duration: 0.5), value: selectedFlag)
                         }
                     }
                 }
@@ -85,6 +94,7 @@ struct ContentView: View {
     }
 }
 
+
 private extension ContentView {
     func flagTapped(_ number: Int) {
         questionsAsked += 1
@@ -97,10 +107,11 @@ private extension ContentView {
             scoreTitle = "Wrong"
             let chosenCountry = countries[number]
             scoreMessage = "Wrong! That’s the flag of \(chosenCountry).\nYour score is \(score)"
-            resetGame()
         }
 
-        showingScore = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
+            showingScore = true
+        }
     }
 
     func nextQuestion() {
@@ -109,6 +120,7 @@ private extension ContentView {
         } else {
             countries.shuffle()
             correctAnswer = Int.random(in: 0...2)
+            selectedFlag = nil
         }
     }
 
@@ -117,6 +129,7 @@ private extension ContentView {
         questionsAsked = 0
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        selectedFlag = nil
     }
 }
 
