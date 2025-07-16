@@ -36,25 +36,35 @@ final class Expenses {
 struct ContentView: View {
     @State private var expenses = Expenses()
     @State private var showAddExpense = false
-    
+
+    var personalItems: [ExpenseItem] {
+        expenses.items.filter { $0.type == "Personal" }
+    }
+
+    var businessItems: [ExpenseItem] {
+        expenses.items.filter { $0.type == "Business" }
+    }
+
     var body: some View {
         NavigationStack {
             List {
-                ForEach(expenses.items, id: \.id) { item in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(item.name)
-                                .font(.headline)
-                            
-                            Text(item.type)
-                        }
-                        
-                        Spacer()
-                        
-                        Text(item.amount, format: .currency(code: "USD"))
+                Section("Personal") {
+                    ForEach(personalItems) { item in
+                        ExpenseRow(item: item)
+                    }
+                    .onDelete { offsets in
+                        removeItems(offsets: offsets, in: personalItems)
                     }
                 }
-                .onDelete(perform: removeItems)
+
+                Section("Business") {
+                    ForEach(businessItems) { item in
+                        ExpenseRow(item: item)
+                    }
+                    .onDelete { offsets in
+                        removeItems(offsets: offsets, in: businessItems)
+                    }
+                }
             }
             .navigationTitle("iExpense")
             .toolbar {
@@ -69,9 +79,14 @@ struct ContentView: View {
     }
 }
 
+
 private extension ContentView {
-    func removeItems(at offsets: IndexSet) {
-        expenses.items.remove(atOffsets: offsets)
+    func removeItems(offsets: IndexSet, in items: [ExpenseItem]) {
+        for offset in offsets {
+            if let index = expenses.items.firstIndex(where: { $0.id == items[offset].id }) {
+                expenses.items.remove(at: index)
+            }
+        }
     }
 }
 
